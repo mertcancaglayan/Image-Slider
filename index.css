@@ -1,0 +1,23 @@
+body {
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#imageGallery {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4vmin;
+    height: 100%;
+}
+
+
+#imageGallery > .image {
+    width: 40vmin;
+    height: 56vmin;
+    object-fit: cover;
+}
