@@ -40,7 +40,8 @@ window.onmouseup = () => {
 };
 
 window.onmousemove = (event) => {
-	if (!isMouseDown) return;
+	if (!isMouseDown || isZoomed) return;
+
 
 	const mouseDelta = parseFloat(imageGalleryDiv.dataset.mouseDownAt) - event.clientX;
 	const maxDelta = window.innerWidth / 2;
@@ -70,7 +71,7 @@ window.ontouchend = () => {
 };
 
 window.ontouchmove = (event) => {
-	if (!isMouseDown) return;
+	if (!isMouseDown || isZoomed) return;
 	event.preventDefault();
 
 	const touchDelta = parseFloat(imageGalleryDiv.dataset.touchStartX) - event.touches[0].clientX;
@@ -91,6 +92,7 @@ window.ontouchmove = (event) => {
 };
 
 window.onwheel = (event) => {
+    if (isZoomed) return;
     const wheelValue = event.deltaY;
 
     let percentage = wheelValue / 15;
@@ -106,3 +108,64 @@ window.onwheel = (event) => {
     }, {duration: 1100, fill:"forwards"});
 };
 
+
+let isZoomed = false;
+
+const bodyTransition = (clickedElement) => {
+    const images = document.querySelectorAll('.image');
+
+    if (isZoomed) {
+        images.forEach(img => {
+            if (img === clickedElement) {
+                img.style.filter = "none";
+            } else {
+                img.style.filter = "blur(5px)";
+                img.style.transition = "filter 0.5s ease-in-out";
+            }
+        });
+    } else {
+        imageGalleryDiv.style.filter = "none";
+        images.forEach(img => {
+            img.style.filter = "none";
+        });
+    }
+};
+
+const zoomOut = (clickedElement) => {
+    clickedElement.animate({
+        transform: "scale(1)"
+    }, {
+        duration: 500,
+        fill: "forwards"
+    });
+    isZoomed = false;
+    bodyTransition(clickedElement);
+    clickedElement.classList.remove("zoom");
+};
+
+const zoomIn = (clickedElement) => {
+    clickedElement.classList.add("zoom");
+    clickedElement.animate({
+        transform: "scale(1.6)"
+    }, {
+        duration: 500,
+        fill: "forwards"
+    });
+    isZoomed = true;
+    bodyTransition(clickedElement);
+    clickedElement.style.zIndex = 1;
+};
+
+imageGalleryDiv.addEventListener("click", (event) => {
+    const clickedElement = event.target;
+
+    if (clickedElement === imageGalleryDiv) {
+        return;
+    }
+
+    if (clickedElement.classList.contains("zoom")) {
+        zoomOut(clickedElement);
+    } else {
+        zoomIn(clickedElement);
+    }
+});
