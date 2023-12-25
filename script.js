@@ -135,109 +135,105 @@ const bodyTransition = (clickedElement) => {
 	}
 };
 
-
 let isZooming = false;
 
 const disableClick = () => {
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.backgroundColor = "rgba(0, 0, 0, 0)";
-    overlay.style.zIndex = "9999"; 
-    overlay.id = "clickOverlay";
+	const overlay = document.createElement("div");
+	overlay.style.position = "fixed";
+	overlay.style.top = "0";
+	overlay.style.left = "0";
+	overlay.style.width = "100%";
+	overlay.style.height = "100%";
+	overlay.style.backgroundColor = "rgba(0, 0, 0, 0)";
+	overlay.style.zIndex = "9999";
+	overlay.id = "clickOverlay";
 
-    document.body.appendChild(overlay);
+	document.body.appendChild(overlay);
 
-    document.body.style.overflow = "hidden";
+	document.body.style.overflow = "hidden";
 };
 
 const enableClick = () => {
-    const overlay = document.getElementById("clickOverlay");
-    if (overlay) {
-        overlay.parentNode.removeChild(overlay);
-    }
-
+	const overlay = document.getElementById("clickOverlay");
+	if (overlay) {
+		overlay.parentNode.removeChild(overlay);
+	}
 };
 
 const zoomOut = (clickedElement) => {
-    if (isZooming) {
-        return;
-    }
+	if (isZooming) {
+		return;
+	}
 
-    isZooming = true;
+	isZooming = true;
 
-    disableClick();
+	disableClick();
 
-    clickedElement.classList.remove("zoom");
-    clickedElement.animate(
-        {
-            transform: "scale(1)",
-        },
-        {
-            duration: 500,
-            fill: "forwards",
-        },
-    );
-    isZoomed = false;
-    bodyTransition(clickedElement);
+	clickedElement.classList.remove("zoom");
+	clickedElement.animate(
+		{
+			transform: "scale(1)",
+		},
+		{
+			duration: 500,
+			fill: "forwards",
+		},
+	);
+	isZoomed = false;
+	bodyTransition(clickedElement);
 
-    setTimeout(() => {
-        clickedElement.style.zIndex = 0;
-        isZooming = false;
-        enableClick(); 
-    }, 500);
+	setTimeout(() => {
+		clickedElement.style.zIndex = 0;
+		isZooming = false;
+		enableClick();
+	}, 500);
 };
 
 const zoomIn = (clickedElement) => {
-    if (isZooming) {
-        return;
-    }
+	if (isZooming) {
+		return;
+	}
 
-    isZooming = true;
+	isZooming = true;
 
-    disableClick();
+	disableClick();
 
-    clickedElement.classList.add("zoom");
-    clickedElement.animate(
-        {
-            transform: "scale(1.6)",
-        },
-        {
-            duration: 500,
-            fill: "forwards",
-        },
-    );
-    isZoomed = true;
-    bodyTransition(clickedElement);
-    clickedElement.style.zIndex = 1;
+	clickedElement.classList.add("zoom");
+	clickedElement.animate(
+		{
+			transform: "scale(1.6)",
+		},
+		{
+			duration: 500,
+			fill: "forwards",
+		},
+	);
+	isZoomed = true;
+	bodyTransition(clickedElement);
+	clickedElement.style.zIndex = 1;
 
-    setTimeout(() => {
-        isZooming = false;
-        enableClick(); 
-    }, 500);
+	setTimeout(() => {
+		isZooming = false;
+		enableClick();
+	}, 500);
 };
 
-
 imageGalleryDiv.addEventListener("click", (event) => {
-    const clickedElement = event.target;
+	const clickedElement = event.target;
 
-    if (clickedElement === imageGalleryDiv) {
-        return;
-    }
+	if (clickedElement === imageGalleryDiv) {
+		return;
+	}
 
-    const zoomedChild = imageGalleryDiv.querySelector(".zoom");
+	const zoomedChild = imageGalleryDiv.querySelector(".zoom");
 
-
-    if (clickedElement.classList.contains("zoom")) {
-        zoomOut(clickedElement);
-    } else {
-        if (zoomedChild) {
-            zoomOut(zoomedChild);
-        } else {
-            zoomIn(clickedElement);
-        }
-    };
+	if (clickedElement.classList.contains("zoom")) {
+		zoomOut(clickedElement);
+	} else {
+		if (zoomedChild) {
+			zoomOut(zoomedChild);
+		} else {
+			zoomIn(clickedElement);
+		}
+	}
 });
