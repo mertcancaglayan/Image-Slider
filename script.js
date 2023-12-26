@@ -26,6 +26,16 @@ imageNames.forEach((imageName) => {
 	imageGalleryDiv.appendChild(imgElement);
 });
 
+
+const sliding = (value) => {
+	imageGalleryDiv.animate(
+		{
+			transform: `translate(${-value}%)`,
+		},
+		{ duration: 1100, fill: "forwards" },
+	);
+}
+
 window.onmousedown = (event) => {
 	event.preventDefault();
 	isMouseDown = true;
@@ -44,20 +54,15 @@ window.onmousemove = (event) => {
 	const mouseDelta = parseFloat(imageGalleryDiv.dataset.mouseDownAt) - event.clientX;
 	const maxDelta = window.innerWidth / 2;
 
-	let percentage = (mouseDelta / maxDelta) * -100;
+	let percentage = (mouseDelta / maxDelta) * 100;
 	let nextPercentage = parseFloat(imageGalleryDiv.dataset.prevPercentage) + percentage;
 
-	nextPercentage = Math.min(nextPercentage, 100);
-	nextPercentage = Math.max(nextPercentage, -100);
+	nextPercentage = Math.min(nextPercentage, 125);
+	nextPercentage = Math.max(nextPercentage, -125);
 
 	imageGalleryDiv.dataset.percentage = nextPercentage;
 
-	imageGalleryDiv.animate(
-		{
-			transform: `translate(${nextPercentage}%)`,
-		},
-		{ duration: 1100, fill: "forwards" },
-	);
+	sliding(nextPercentage);
 };
 
 window.ontouchstart = (event) => {
@@ -77,20 +82,15 @@ window.ontouchmove = (event) => {
 	const touchDelta = parseFloat(imageGalleryDiv.dataset.touchStartX) - event.touches[0].clientX;
 	const maxDelta = window.innerWidth / 2;
 
-	let percentage = (touchDelta / maxDelta) * -100;
+	let percentage = (touchDelta / maxDelta) * 100;
 	let nextPercentage = parseFloat(imageGalleryDiv.dataset.prevPercentage) + percentage;
 
-	nextPercentage = Math.min(nextPercentage, 100);
-	nextPercentage = Math.max(nextPercentage, -100);
+	nextPercentage = Math.min(nextPercentage, 125);
+	nextPercentage = Math.max(nextPercentage, -125);
 
 	imageGalleryDiv.dataset.percentage = nextPercentage;
 
-	imageGalleryDiv.animate(
-		{
-			transform: `translate(${nextPercentage}%)`,
-		},
-		{ duration: 1100, fill: "forwards" },
-	);
+	sliding(nextPercentage);
 };
 
 window.onwheel = (event) => {
@@ -100,17 +100,12 @@ window.onwheel = (event) => {
 	let percentage = wheelValue / 15;
 	let nextPercentage = parseFloat(imageGalleryDiv.dataset.prevPercentage) + percentage;
 
-	nextPercentage = Math.min(nextPercentage, 100);
-	nextPercentage = Math.max(nextPercentage, -100);
+	nextPercentage = Math.min(nextPercentage, 125);
+	nextPercentage = Math.max(nextPercentage, -125);
 
 	imageGalleryDiv.dataset.prevPercentage = nextPercentage;
 
-	imageGalleryDiv.animate(
-		{
-			transform: `translate(${-nextPercentage}%)`,
-		},
-		{ duration: 1100, fill: "forwards" },
-	);
+	sliding(nextPercentage);
 };
 
 let isZoomed = false;
@@ -219,21 +214,30 @@ const zoomIn = (clickedElement) => {
 };
 
 imageGalleryDiv.addEventListener("click", (event) => {
-	const clickedElement = event.target;
+    const clickedElement = event.target;
 
-	if (clickedElement === imageGalleryDiv) {
-		return;
-	}
+    if (clickedElement === imageGalleryDiv) {
+        return;
+    }
 
-	const zoomedChild = imageGalleryDiv.querySelector(".zoom");
+    const elements = document.querySelectorAll(".image");
+    const elementIndex = Array.from(elements).indexOf(clickedElement);
 
-	if (clickedElement.classList.contains("zoom")) {
-		zoomOut(clickedElement);
-	} else {
-		if (zoomedChild) {
-			zoomOut(zoomedChild);
-		} else {
-			zoomIn(clickedElement);
-		}
-	}
+    const totalElements = elements.length;
+    const percentage = (elementIndex / (totalElements - 1)) * 250 - 125;
+
+    imageGalleryDiv.dataset.percentage = percentage;
+
+	sliding(percentage)
+    const zoomedChild = imageGalleryDiv.querySelector(".zoom");
+
+    if (clickedElement.classList.contains("zoom")) {
+        zoomOut(clickedElement);
+    } else {
+        if (zoomedChild) {
+            zoomOut(zoomedChild);
+        } else {
+            zoomIn(clickedElement);
+        }
+    }
 });
